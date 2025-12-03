@@ -44,27 +44,29 @@
 {{-- Main Navigation --}}
 <nav class="navbar navbar-expand-xl sticky-top bg-white w-100 border-bottom">
     <div class="container">
-        <div class="d-flex justify-content-between w-100 align-items-center">
-            <div class="d-flex align-items-center w-100 w-md-auto">
-                <button class="navbar-toggler offcanvas-nav-btn" type="button">
-                    <i class="bi bi-list"></i>
-                </button>
-                <a class="navbar-brand mx-auto mx-xxl-0 ms-4 me-5" href="{{ route('home') }}">
-                    @if($settings->logo)
-                        <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->site_title }}" style="max-height: 50px;">
-                    @else
-                        <img src="{{ frontend_asset('images/logo/logo.svg') }}" alt="{{ $settings->site_title ?? 'Logo' }}" />
-                    @endif
-                </a>
+        <div class="row w-100 align-items-center g-0">
+            <div class="col-auto">
+                <div class="d-flex align-items-center">
+                    <button class="navbar-toggler offcanvas-nav-btn" type="button">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <a class="navbar-brand ms-4" href="{{ route('home') }}">
+                        @if($settings->logo)
+                            <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->site_title }}" style="max-height: 50px;">
+                        @else
+                            <img src="{{ frontend_asset('images/logo/logo.svg') }}" alt="{{ $settings->site_title ?? 'Logo' }}" />
+                        @endif
+                    </a>
+                </div>
             </div>
-            <div class="ms-3">
+            <div class="col">
                 <div class="offcanvas offcanvas-bottom offcanvas-nav" style="height: 60vh">
                     <div class="offcanvas-header position-absolute top-0 start-50 translate-middle mt-n5">
                         <button type="button" class="btn-close bg-white opacity-100" data-bs-dismiss="offcanvas"
                             aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body pt-xl-0 align-items-center">
-                        <ul class="navbar-nav mb-2 mb-lg-0">
+                    <div class="offcanvas-body pt-xl-0 align-items-center d-flex justify-content-end">
+                        <ul class="navbar-nav mb-2 mb-lg-0 flex-row flex-wrap gap-2">
                             @php
                                 $topMenuCategories = \App\Models\Category::where('show_in_top_menu', true)
                                     ->where(function($query) {
@@ -76,10 +78,22 @@
                             @endphp
                             
                             @foreach($topMenuCategories as $category)
-                                <li class="nav-item w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                    <a class="nav-link {{ request()->is($category->slug) ? 'active' : '' }}" 
-                                       href="{{ url('/' . $category->slug) }}">
-                                        {{ $category->name }}
+                                <li class="nav-item">
+                                    <a class="nav-link py-1 px-2 d-flex flex-column align-items-center {{ request()->is($category->slug) ? 'active' : '' }}" 
+                                       href="{{ url('/' . $category->slug) }}"
+                                       style="font-size: 0.875rem; white-space: nowrap;">
+                                        @if($category->icon || $category->image)
+                                            <div class="mb-1" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                                @if($category->image)
+                                                    <img src="{{ asset('storage/' . $category->image) }}" 
+                                                         alt="{{ $category->name }}" 
+                                                         style="max-width: 24px; max-height: 24px; object-fit: contain;">
+                                                @elseif($category->icon)
+                                                    <i class="{{ $category->icon }}" style="font-size: 24px;"></i>
+                                                @endif
+                                            </div>
+                                        @endif
+                                        <span>{{ $category->name }}</span>
                                     </a>
                                 </li>
                             @endforeach
