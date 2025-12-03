@@ -68,6 +68,14 @@
                                     </div>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><i class="bi bi-box-seam"></i></span>
+                                        <span class="nav-link-text">Ürünler</span>
+                                    </div>
+                                </a>
+                            </li>
 
 
                         </ul>
@@ -105,6 +113,14 @@
                             </li>
 
                         
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><i class="bi bi-box-seam"></i></span>
+                                        <span class="nav-link-text">Ürünler</span>
+                                    </div>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('categories.index') }}">
                                     <div class="d-flex align-items-center">
