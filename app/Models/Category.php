@@ -42,4 +42,10 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
+
+    // Products relationship (many-to-many)
+    public function products()
+    {
+        return $this->belongsToMany(\App\Models\Product::class, 'product_category');
+    }
 }

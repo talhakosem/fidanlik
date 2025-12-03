@@ -23,6 +23,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('posts', PostController::class);
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
     Route::resource('products', \App\Http\Controllers\ProductController::class);
+    Route::post('products/{product}/images', [\App\Http\Controllers\ProductController::class, 'storeImage'])->name('products.images.store');
+    Route::delete('products/{product}/images/{productImage}', [\App\Http\Controllers\ProductController::class, 'deleteImage'])->name('products.images.delete');
+    Route::post('products/{product}/images/reorder', [\App\Http\Controllers\ProductController::class, 'updateImageOrder'])->name('products.images.reorder');
+    Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
 });
 
 require __DIR__.'/auth.php';

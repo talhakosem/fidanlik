@@ -73,9 +73,9 @@
     <div class="col-lg-4 col-12">
         <div class="card card-lg">
             <div class="card-body p-6 d-flex flex-column gap-4">
-                <!-- Kategori -->
+                <!-- Ana Kategori (Tek Seçim - Geriye Dönük Uyumluluk) -->
                 <div>
-                    <label for="category_id" class="form-label">Kategori</label>
+                    <label for="category_id" class="form-label">Ana Kategori</label>
                     <select class="form-select @error('category_id') is-invalid @enderror" 
                             id="category_id" 
                             name="category_id">
@@ -86,8 +86,33 @@
                             </option>
                         @endforeach
                     </select>
+                    <small class="form-text text-muted">Geriye dönük uyumluluk için (opsiyonel)</small>
                     @error('category_id')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Çoklu Kategoriler -->
+                <div>
+                    <label class="form-label">Kategoriler</label>
+                    <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        @foreach($categories as $category)
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       name="categories[]" 
+                                       value="{{ $category->id }}" 
+                                       id="category_{{ $category->id }}"
+                                       {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="category_{{ $category->id }}">
+                                    {{ $category->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="form-text text-muted">Birden fazla kategori seçebilirsiniz</small>
+                    @error('categories')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
 

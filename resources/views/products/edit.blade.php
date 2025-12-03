@@ -67,6 +67,62 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <!-- Ürün Görselleri -->
+                <div class="mt-4">
+                    <h5 class="mb-3">Ürün Görselleri</h5>
+                    
+                    <!-- Görsel Yükleme -->
+                    <div class="mb-4">
+                        <label for="product-images" class="form-label">Yeni Görsel Ekle</label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="product-images" 
+                               name="images[]" 
+                               multiple 
+                               accept="image/*">
+                        <small class="form-text text-muted">Birden fazla görsel seçebilirsiniz (JPEG, PNG, JPG, GIF, WEBP - Max: 2MB)</small>
+                        <button type="button" class="btn btn-primary mt-2" id="upload-images-btn">
+                            <i class="bi bi-upload me-2"></i>Görselleri Yükle
+                        </button>
+                    </div>
+
+                    <!-- Görsel Listesi -->
+                    <div id="images-container" class="row g-3">
+                        @foreach($product->images as $image)
+                            <div class="col-md-3 col-sm-4 col-6 image-item" data-image-id="{{ $image->id }}">
+                                <div class="card position-relative">
+                                    <img src="{{ asset('storage/' . $image->image) }}" 
+                                         class="card-img-top" 
+                                         alt="Ürün Görseli"
+                                         style="height: 200px; object-fit: cover;">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Sıra: {{ $image->sort_order }}</small>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-danger delete-image-btn" 
+                                                    data-image-id="{{ $image->id }}"
+                                                    data-product-id="{{ $product->id }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="position-absolute top-0 start-0 m-2">
+                                        <span class="badge bg-secondary drag-handle" style="cursor: move;">
+                                            <i class="bi bi-grip-vertical"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($product->images->isEmpty())
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>Henüz görsel eklenmemiş.
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -74,9 +130,9 @@
     <div class="col-lg-4 col-12">
         <div class="card card-lg">
             <div class="card-body p-6 d-flex flex-column gap-4">
-                <!-- Kategori -->
+                <!-- Ana Kategori (Tek Seçim - Geriye Dönük Uyumluluk) -->
                 <div>
-                    <label for="category_id" class="form-label">Kategori</label>
+                    <label for="category_id" class="form-label">Ana Kategori</label>
                     <select class="form-select @error('category_id') is-invalid @enderror" 
                             id="category_id" 
                             name="category_id">
@@ -88,8 +144,36 @@
                             </option>
                         @endforeach
                     </select>
+                    <small class="form-text text-muted">Geriye dönük uyumluluk için (opsiyonel)</small>
                     @error('category_id')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Çoklu Kategoriler -->
+                <div>
+                    <label class="form-label">Kategoriler</label>
+                    <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        @php
+                            $selectedCategories = old('categories', $product->categories->pluck('id')->toArray());
+                        @endphp
+                        @foreach($categories as $category)
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       name="categories[]" 
+                                       value="{{ $category->id }}" 
+                                       id="category_{{ $category->id }}"
+                                       {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="category_{{ $category->id }}">
+                                    {{ $category->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="form-text text-muted">Birden fazla kategori seçebilirsiniz</small>
+                    @error('categories')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -222,6 +306,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Ürün adı değiştiğinde slug'ı otomatik oluştur
@@ -248,6 +333,122 @@ document.addEventListener('DOMContentLoaded', function() {
     slugInput.addEventListener('input', function() {
         this.dataset.manual = 'true';
     });
+
+    // Görsel yükleme
+    const uploadBtn = document.getElementById('upload-images-btn');
+    const imageInput = document.getElementById('product-images');
+    const productId = {{ $product->id }};
+
+    uploadBtn.addEventListener('click', function() {
+        const files = imageInput.files;
+        if (files.length === 0) {
+            alert('Lütfen en az bir görsel seçin.');
+            return;
+        }
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('images[]', files[i]);
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor...';
+
+        fetch(`/products/${productId}/images`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Görsel yükleme hatası: ' + (data.message || 'Bilinmeyen hata'));
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Görselleri Yükle';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Görsel yükleme sırasında bir hata oluştu.');
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Görselleri Yükle';
+        });
+    });
+
+    // Görsel silme
+    document.querySelectorAll('.delete-image-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!confirm('Bu görseli silmek istediğinize emin misiniz?')) {
+                return;
+            }
+
+            const imageId = this.dataset.imageId;
+            const productId = this.dataset.productId;
+
+            fetch(`/products/${productId}/images/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`[data-image-id="${imageId}"]`).remove();
+                    if (document.querySelectorAll('.image-item').length === 0) {
+                        location.reload();
+                    }
+                } else {
+                    alert('Görsel silme hatası: ' + (data.message || 'Bilinmeyen hata'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Görsel silme sırasında bir hata oluştu.');
+            });
+        });
+    });
+
+    // Görsel sıralama (SortableJS)
+    const imagesContainer = document.getElementById('images-container');
+    if (imagesContainer && imagesContainer.children.length > 0) {
+        new Sortable(imagesContainer, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function(evt) {
+                const imageIds = Array.from(imagesContainer.querySelectorAll('.image-item')).map(item => item.dataset.imageId);
+                
+                fetch(`/products/${productId}/images/reorder`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image_ids: imageIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Sıra numaralarını güncelle
+                        imagesContainer.querySelectorAll('.image-item').forEach((item, index) => {
+                            const sortOrderElement = item.querySelector('.text-muted');
+                            if (sortOrderElement) {
+                                sortOrderElement.textContent = `Sıra: ${index + 1}`;
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    }
 });
 </script>
 @endpush

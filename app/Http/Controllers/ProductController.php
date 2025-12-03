@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,8 +16,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('category')
-            ->latest()
+        $products = Product::latest()
             ->paginate(20);
 
         return view('products.index', compact('products'));
@@ -48,6 +48,8 @@ class ProductController extends Controller
             'stock' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
             'brand_id' => 'nullable|integer',
             'delivery_date' => 'nullable|date',
             'is_active' => 'nullable|boolean',
@@ -71,7 +73,16 @@ class ProductController extends Controller
         $data['stock'] = $data['stock'] ?? 0;
         $data['is_active'] = $request->has('is_active');
 
-        Product::create($data);
+        // Çoklu kategorileri ayır
+        $categories = $data['categories'] ?? [];
+        unset($data['categories']);
+
+        $product = Product::create($data);
+
+        // Çoklu kategorileri ekle
+        if (!empty($categories)) {
+            $product->categories()->sync($categories);
+        }
 
         return redirect()->route('products.index')
             ->with('success', 'Ürün başarıyla oluşturuldu.');
@@ -83,6 +94,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
+        $product->load(['images', 'categories']);
 
         return view('products.edit', compact('product', 'categories'));
     }
@@ -103,6 +115,8 @@ class ProductController extends Controller
             'stock' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
             'brand_id' => 'nullable|integer',
             'delivery_date' => 'nullable|date',
             'is_active' => 'nullable|boolean',
@@ -126,7 +140,14 @@ class ProductController extends Controller
         $data['stock'] = $data['stock'] ?? 0;
         $data['is_active'] = $request->has('is_active');
 
+        // Çoklu kategorileri ayır
+        $categories = $data['categories'] ?? [];
+        unset($data['categories']);
+
         $product->update($data);
+
+        // Çoklu kategorileri güncelle
+        $product->categories()->sync($categories);
 
         return redirect()->route('products.index')
             ->with('success', 'Ürün güncellendi.');
@@ -149,5 +170,82 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', 'Ürün silindi.');
+    }
+
+    /**
+     * Store product images
+     */
+    public function storeImage(Request $request, Product $product)
+    {
+        $request->validate([
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        $maxSortOrder = $product->images()->max('sort_order') ?? 0;
+
+        foreach ($request->file('images') as $image) {
+            $imagePath = $image->store('products', 'public');
+            
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image' => $imagePath,
+                'sort_order' => ++$maxSortOrder,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Görseller başarıyla yüklendi.',
+        ]);
+    }
+
+    /**
+     * Delete product image
+     */
+    public function deleteImage(Product $product, ProductImage $productImage)
+    {
+        // Görselin bu ürüne ait olduğunu kontrol et
+        if ($productImage->product_id !== $product->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bu görsel bu ürüne ait değil.',
+            ], 403);
+        }
+
+        // Dosyayı sil
+        if ($productImage->image && Storage::disk('public')->exists($productImage->image)) {
+            Storage::disk('public')->delete($productImage->image);
+        }
+
+        // Veritabanından sil
+        $productImage->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Görsel başarıyla silindi.',
+        ]);
+    }
+
+    /**
+     * Update image sort order
+     */
+    public function updateImageOrder(Request $request, Product $product)
+    {
+        $request->validate([
+            'image_ids' => 'required|array',
+            'image_ids.*' => 'exists:product_images,id',
+        ]);
+
+        foreach ($request->image_ids as $index => $imageId) {
+            ProductImage::where('id', $imageId)
+                ->where('product_id', $product->id)
+                ->update(['sort_order' => $index + 1]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sıralama güncellendi.',
+        ]);
     }
 }

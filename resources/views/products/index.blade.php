@@ -27,7 +27,6 @@
                             <tr>
                                 <th style="width: 50px;">Görsel</th>
                                 <th>Ürün Adı</th>
-                                <th>Kategori</th>
                                 <th>Agrolidya Linki</th>
                                 <th>Stok</th>
                                 <th>Durum</th>
@@ -54,13 +53,6 @@
                                     <td>
                                         <div class="fw-semibold">{{ $product->name }}</div>
                                         <small class="text-muted">{{ $product->slug }}</small>
-                                    </td>
-                                    <td>
-                                        @if($product->category)
-                                            <span class="badge bg-info">{{ $product->category->name }}</span>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
                                     </td>
                                     <td>
                                         @if($product->agrolidya_link)
@@ -110,7 +102,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center py-5">
+                                    <td colspan="7" class="text-center py-5">
                                         <i class="bi bi-inbox display-4 text-muted"></i>
                                         <p class="text-muted mb-0 mt-2">Henüz ürün yok.</p>
                                         <a href="{{ route('products.create') }}" class="btn btn-sm btn-primary mt-2">

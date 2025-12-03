@@ -6,11 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Codescandy" name="author">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php
+        $settings = \App\Models\Setting::getSettings();
+    @endphp
     
-    <title>@yield('title', 'Admin Panel') - {{ config('app.name', 'FreshCart') }}</title>
+    <title>@yield('title', 'Admin Panel') - {{ $settings->site_title ?? config('app.name', 'FreshCart') }}</title>
     
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ admin_asset('images/favicon/favicon.ico') }}">
+    @if($settings->favicon)
+        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/' . $settings->favicon) }}">
+    @else
+        <link rel="shortcut icon" type="image/x-icon" href="{{ admin_asset('images/favicon/favicon.ico') }}">
+    @endif
 
     <!-- Libs CSS -->
     <link href="{{ admin_asset('libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
@@ -33,7 +40,15 @@
                 <div class="navbar-vertical">
                     <div class="px-4 py-5">
                         <a href="{{ route('dashboard') }}" class="navbar-brand">
-                            <img src="{{ admin_asset('images/logo/freshcart-logo.svg') }}" alt="Logo" />
+@if($settings->logo)
+                                <img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" style="max-height: 40px;" />
+                            @else
+                                @if($settings->logo)
+                                <img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" style="max-height: 40px;" />
+                            @else
+                                <img src="{{ admin_asset('images/logo/freshcart-logo.svg') }}" alt="Logo" />
+                            @endif
+                            @endif
                         </a>
                     </div>
                     <div class="navbar-vertical-content flex-grow-1" data-simplebar="">
@@ -76,6 +91,17 @@
                                     </div>
                                 </a>
                             </li>
+                            <li class="nav-item mt-6 mb-3">
+                                <span class="nav-label">Ayarlar</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><i class="bi bi-gear"></i></span>
+                                        <span class="nav-link-text">Site Ayarları</span>
+                                    </div>
+                                </a>
+                            </li>
 
 
                         </ul>
@@ -88,7 +114,15 @@
                 <div class="navbar-vertical">
                     <div class="px-4 py-5 d-flex justify-content-between align-items-center">
                         <a href="{{ route('dashboard') }}" class="navbar-brand">
-                            <img src="{{ admin_asset('images/logo/freshcart-logo.svg') }}" alt="Logo" />
+@if($settings->logo)
+                                <img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" style="max-height: 40px;" />
+                            @else
+                                @if($settings->logo)
+                                <img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" style="max-height: 40px;" />
+                            @else
+                                <img src="{{ admin_asset('images/logo/freshcart-logo.svg') }}" alt="Logo" />
+                            @endif
+                            @endif
                         </a>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
@@ -110,6 +144,14 @@
                                         <span class="nav-link-text">Blog Yazıları</span>
                                     </div>
                                 </a>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><i class="bi bi-gear"></i></span>
+                                        <span class="nav-link-text">Site Ayarları</span>
+                                    </div>
+                                </a>
+                            </li>
                             </li>
 
                         
