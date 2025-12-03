@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Ürünler')
+@section('title', 'Bloglar')
 
 @section('content')
 <div class="row">
@@ -110,9 +110,59 @@
             </div>
         </div>
 
-        <div class="mt-4">
-            {{ $posts->links() }}
+        @if($posts->hasPages())
+        <div class="col-12 mt-4">
+            <div>
+                <nav class="mt-7 mt-lg-10">
+                    <ul class="pagination mb-0">
+                        {{-- Previous Page Link --}}
+                        @if ($posts->onFirstPage())
+                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                        @else
+                            <li class="page-item"><a class="page-link" href="{{ $posts->previousPageUrl() }}">Previous</a></li>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @php
+                            $currentPage = $posts->currentPage();
+                            $lastPage = $posts->lastPage();
+                            $startPage = max(1, $currentPage - 2);
+                            $endPage = min($lastPage, $currentPage + 2);
+                        @endphp
+
+                        @if($startPage > 1)
+                            <li class="page-item"><a class="page-link" href="{{ $posts->url(1) }}">1</a></li>
+                            @if($startPage > 2)
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            @endif
+                        @endif
+
+                        @for ($page = $startPage; $page <= $endPage; $page++)
+                            @if ($page == $currentPage)
+                                <li class="page-item"><a class="page-link active" href="#!">{{ $page }}</a></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $posts->url($page) }}">{{ $page }}</a></li>
+                            @endif
+                        @endfor
+
+                        @if($endPage < $lastPage)
+                            @if($endPage < $lastPage - 1)
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            @endif
+                            <li class="page-item"><a class="page-link" href="{{ $posts->url($lastPage) }}">{{ $lastPage }}</a></li>
+                        @endif
+
+                        {{-- Next Page Link --}}
+                        @if ($posts->hasMorePages())
+                            <li class="page-item"><a class="page-link" href="{{ $posts->nextPageUrl() }}">Next</a></li>
+                        @else
+                            <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        @endif
+                    </ul>
+                </nav>
+            </div>
         </div>
+        @endif
     </div>
 </div>
 @endsection
