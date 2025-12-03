@@ -49,7 +49,7 @@
                 <button class="navbar-toggler offcanvas-nav-btn" type="button">
                     <i class="bi bi-list"></i>
                 </button>
-                <a class="navbar-brand mx-auto mx-xxl-0 ms-4" href="{{ route('home') }}">
+                <a class="navbar-brand mx-auto mx-xxl-0 ms-4 me-5" href="{{ route('home') }}">
                     @if($settings->logo)
                         <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->site_title }}" style="max-height: 50px;">
                     @else
@@ -57,7 +57,7 @@
                     @endif
                 </a>
             </div>
-            <div class="">
+            <div class="ms-3">
                 <div class="offcanvas offcanvas-bottom offcanvas-nav" style="height: 60vh">
                     <div class="offcanvas-header position-absolute top-0 start-50 translate-middle mt-n5">
                         <button type="button" class="btn-close bg-white opacity-100" data-bs-dismiss="offcanvas"
@@ -65,43 +65,24 @@
                     </div>
                     <div class="offcanvas-body pt-xl-0 align-items-center">
                         <ul class="navbar-nav mb-2 mb-lg-0">
-                            <li class="nav-item w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Ana Sayfa</a>
-                            </li>
-                            
                             @php
-                                $topMenuCategories = \App\Models\Category::where('show_in_top_menu', true)->orderBy('sort_order')->get();
+                                $topMenuCategories = \App\Models\Category::where('show_in_top_menu', true)
+                                    ->where(function($query) {
+                                        $query->whereNull('parent_id')
+                                              ->orWhere('parent_id', 0);
+                                    })
+                                    ->orderBy('sort_order')
+                                    ->get();
                             @endphp
                             
-                            @if($topMenuCategories->count() > 0)
-                                <li class="nav-item dropdown w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                    <a class="nav-link dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">Kategoriler</a>
-                                    <ul class="dropdown-menu">
-                                        @foreach($topMenuCategories as $category)
-                                            <li><a class="dropdown-item" href="#">{{ $category->name }}</a></li>
-                                        @endforeach
-                                    </ul>
+                            @foreach($topMenuCategories as $category)
+                                <li class="nav-item w-100 w-lg-auto border-bottom border-bottom-xl-0">
+                                    <a class="nav-link {{ request()->is($category->slug) ? 'active' : '' }}" 
+                                       href="{{ url('/' . $category->slug) }}">
+                                        {{ $category->name }}
+                                    </a>
                                 </li>
-                            @endif
-
-                            <li class="nav-item w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                <a class="nav-link" href="#">Ürünler</a>
-                            </li>
-                            
-                            <li class="nav-item w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                <a class="nav-link {{ request()->routeIs('frontend.blog.*') ? 'active' : '' }}" href="{{ route('frontend.blog.index') }}">Blog</a>
-                            </li>
-
-                            <li class="nav-item dropdown w-100 w-lg-auto border-bottom border-bottom-xl-0">
-                                <a class="nav-link dropdown-toggle" href="#!" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">Sayfalar</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Hakkımızda</a></li>
-                                    <li><a class="dropdown-item" href="#">İletişim</a></li>
-                                    <li><a class="dropdown-item" href="#">SSS</a></li>
-                                </ul>
-                            </li>
+                            @endforeach
                         </ul>
                         <div class="d-xl-none d-grid position-absolute bottom-0 w-100 start-0 end-0 p-4">
                             @auth

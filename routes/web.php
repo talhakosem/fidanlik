@@ -10,6 +10,9 @@ Route::get('/', [\App\Http\Controllers\Frontend\HomeController::class, 'index'])
 // Frontend Blog Routes
 Route::get('blog', [\App\Http\Controllers\Frontend\BlogController::class, 'index'])->name('frontend.blog.index');
 
+// Frontend Product Routes
+Route::get('urunler', [\App\Http\Controllers\Frontend\ProductController::class, 'index'])->name('frontend.products.index');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -35,5 +38,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Blog slug route - must be last to avoid conflicts
-Route::get('{slug}', [\App\Http\Controllers\Frontend\BlogController::class, 'show'])->name('frontend.blog.show');
+// Universal slug route - must be last to avoid conflicts
+// This route handles: categories, products, and blog posts
+Route::get('{slug}', [\App\Http\Controllers\Frontend\BlogController::class, 'show'])->name('frontend.slug');

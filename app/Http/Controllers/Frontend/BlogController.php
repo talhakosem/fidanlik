@@ -37,9 +37,27 @@ class BlogController extends Controller
 
     /**
      * Display the specified blog post.
+     * This method also handles category and product slugs.
      */
     public function show($slug)
     {
+        // Önce kategori kontrolü yap
+        $category = \App\Models\Category::where('slug', $slug)->first();
+        if ($category) {
+            $productController = new \App\Http\Controllers\Frontend\ProductController();
+            return $productController->index(request(), $slug);
+        }
+
+        // Sonra ürün kontrolü yap
+        $product = \App\Models\Product::where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+        if ($product) {
+            $productController = new \App\Http\Controllers\Frontend\ProductController();
+            return $productController->show($slug);
+        }
+
+        // Son olarak blog post kontrolü
         $post = Post::where('slug', $slug)
             ->where('is_published', true)
             ->firstOrFail();
