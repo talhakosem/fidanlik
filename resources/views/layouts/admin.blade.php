@@ -140,7 +140,7 @@
                                 <ul class="list-unstyled d-flex align-items-center mb-0 ms-5 ms-lg-0">
                                     <li class="dropdown ms-4">
                                         <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="{{ admin_asset('images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-md rounded-circle" />
+                                            <img src="https://yt3.ggpht.com/yti/ANjgQV_cgG3-cnaoE1BndNZTZOTp4oQWR6X0MTX_3oTvOWQf5_Y=s108-c-k-c0x00ffffff-no-rj" alt="" class="avatar avatar-md rounded-circle" />
                                         </a>
 
                                         <div class="dropdown-menu dropdown-menu-end p-0">
