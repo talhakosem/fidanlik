@@ -95,18 +95,11 @@
                                 @endif
                                 
                                 <div class="mt-auto">
-                                    @if($product->agrolidya_link)
-                                        <a href="{{ $product->agrolidya_link }}" 
-                                           target="_blank" 
-                                           class="btn btn-primary w-100">
-                                            Agrolidya'da Gör
-                                        </a>
-                                    @else
-                                        <a href="{{ url('/' . $product->slug) }}" 
-                                           class="btn btn-outline-primary w-100">
-                                            Detayları Gör
-                                        </a>
-                                    @endif
+                                    <a href="{{ $product->agrolidya_link ?? 'https://agrolidya.com' }}" 
+                                       target="_blank" 
+                                       class="btn btn-primary w-100">
+                                        Satın Al
+                                    </a>
                                 </div>
                             </div>
                         </div>

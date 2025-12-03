@@ -41,20 +41,20 @@ class BlogController extends Controller
      */
     public function show($slug)
     {
-        // Önce kategori kontrolü yap
-        $category = \App\Models\Category::where('slug', $slug)->first();
-        if ($category) {
-            $productController = new \App\Http\Controllers\Frontend\ProductController();
-            return $productController->index(request(), $slug);
-        }
-
-        // Sonra ürün kontrolü yap
+        // Önce ürün kontrolü yap (daha spesifik)
         $product = \App\Models\Product::where('slug', $slug)
             ->where('is_active', true)
             ->first();
         if ($product) {
             $productController = new \App\Http\Controllers\Frontend\ProductController();
             return $productController->show($slug);
+        }
+
+        // Sonra kategori kontrolü yap
+        $category = \App\Models\Category::where('slug', $slug)->first();
+        if ($category) {
+            $productController = new \App\Http\Controllers\Frontend\ProductController();
+            return $productController->index(request(), $slug);
         }
 
         // Son olarak blog post kontrolü
