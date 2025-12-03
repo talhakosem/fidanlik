@@ -55,7 +55,7 @@
                                 <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><i class="bi bi-cart"></i></span>
-                                        <span class="nav-link-text">Ürünler</span>
+                                        <span class="nav-link-text">Blog Yazıları</span>
                                     </div>
                                 </a>
                             </li>
@@ -69,28 +69,7 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#navBlog" aria-expanded="false" aria-controls="navBlog">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><i class="bi bi-newspaper"></i></span>
-                                        <span class="nav-link-text">Blog</span>
-                                        <span class="badge bg-light-success text-dark-success ms-2">Yeni</span>
-                                    </div>
-                                </a>
-                                <div id="navBlog" class="collapse" data-bs-parent="#sideNavbar">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#!">Grid</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#!">Liste</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#!">Yeni Gönderi</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -120,25 +99,17 @@
                                 <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><i class="bi bi-cart"></i></span>
-                                        <span class="nav-link-text">Ürünler</span>
+                                        <span class="nav-link-text">Blog Yazıları</span>
                                     </div>
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><i class="bi bi-list-task"></i></span>
-                                        <span class="nav-link-text">Kategoriler</span>
-                                    </div>
-                                </a>
-                            </li>
                         
                             <li class="nav-item">
                                 <a class="nav-link" href="#!">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><i class="bi bi-newspaper"></i></span>
-                                        <span class="nav-link-text">Blog</span>
+                                        <span class="nav-link-text">Kategoriler</span>
                                     </div>
                                 </a>
                             </li>
@@ -149,6 +120,60 @@
 
             <!-- main wrapper -->
             <main class="main-content-wrapper">
+                <!-- Navbar Top -->
+                <nav class="navbar navbar-expand-lg navbar-glass">
+                    <div class="container-fluid">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div class="d-flex align-items-center">
+                                <a class="text-inherit d-block d-xl-none me-4" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-text-indent-right" viewBox="0 0 16 16">
+                                        <path d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm10.646 2.146a.5.5 0 0 1 .708.708L11.707 8l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2zM2 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                                    </svg>
+                                </a>
+
+                                <form role="search">
+                                    <label for="search" class="form-label visually-hidden">Ara</label>
+                                    <input class="form-control" type="search" placeholder="Ara" aria-label="Ara" id="search" />
+                                </form>
+                            </div>
+                            <div>
+                                <ul class="list-unstyled d-flex align-items-center mb-0 ms-5 ms-lg-0">
+                                    <li class="dropdown ms-4">
+                                        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="{{ admin_asset('images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-md rounded-circle" />
+                                        </a>
+
+                                        <div class="dropdown-menu dropdown-menu-end p-0">
+                                            <div class="lh-1 px-5 py-4 border-bottom">
+                                                <h5 class="mb-1 h6">{{ Auth::user()->name }}</h5>
+                                                <small>{{ Auth::user()->email }}</small>
+                                            </div>
+
+                                            <ul class="list-unstyled px-2 py-3">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('dashboard') }}">Ana Sayfa</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">Profil</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#!">Ayarlar</a>
+                                                </li>
+                                            </ul>
+                                            <div class="border-top px-5 py-3">
+                                                <form method="POST" action="{{ route('logout') }}">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-link p-0 text-decoration-none">Çıkış Yap</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                
                 <section class="container">
                     @yield('content')
                 </section>

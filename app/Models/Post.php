@@ -14,6 +14,20 @@ class Post extends Model
         'slug',
         'content',
         'user_id',
+        'cover_image',
+        'short_description',
+        'category',
+        'tags',
+        'meta_title',
+        'meta_description',
+        'is_published',
+        'comments_enabled',
+    ];
+
+    protected $casts = [
+        'tags' => 'array',
+        'is_published' => 'boolean',
+        'comments_enabled' => 'boolean',
     ];
 
     public function user()
