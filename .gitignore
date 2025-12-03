@@ -14,8 +14,11 @@
 /auth.json
 /node_modules
 /public/build
+/public/admin
+/public/frontend
 /public/hot
 /public/storage
+/public/assets
 /storage/*.key
 /storage/pail
 /vendor
