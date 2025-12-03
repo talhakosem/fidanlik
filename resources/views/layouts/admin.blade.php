@@ -136,7 +136,7 @@
                                     </div>
                                 </a>
                             </li>
-                        
+                    
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">
                                     <div class="d-flex align-items-center">
