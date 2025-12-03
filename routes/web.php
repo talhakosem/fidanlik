@@ -13,6 +13,9 @@ Route::get('blog', [\App\Http\Controllers\Frontend\BlogController::class, 'index
 // Frontend Product Routes
 Route::get('urunler', [\App\Http\Controllers\Frontend\ProductController::class, 'index'])->name('frontend.products.index');
 
+// Frontend Static Pages
+Route::get('hakkimizda', [\App\Http\Controllers\Frontend\HomeController::class, 'about'])->name('frontend.about');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

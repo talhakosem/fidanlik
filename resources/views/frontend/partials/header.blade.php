@@ -60,28 +60,115 @@
                 </div>
             </div>
             <div class="col">
-                <div class="offcanvas offcanvas-bottom offcanvas-nav" style="height: 60vh">
+                {{-- Desktop Menu --}}
+                <ul class="navbar-nav mb-2 mb-lg-0 flex-row gap-3 d-none d-xl-flex justify-content-end" style="flex-wrap: nowrap;">
+                    @php
+                        $topMenuCategories = \App\Models\Category::where('show_in_top_menu', true)
+                            ->where(function($query) {
+                                $query->whereNull('parent_id')
+                                      ->orWhere('parent_id', 0);
+                            })
+                            ->with(['children' => function($q) {
+                                $q->orderBy('sort_order')->with(['products' => function($q) {
+                                    $q->where('is_active', true)
+                                      ->with('images')
+                                      ->orderBy('name')
+                                      ->limit(5);
+                                }]);
+                            }])
+                            ->orderBy('sort_order')
+                            ->get();
+                    @endphp
+                    
+                    @foreach($topMenuCategories as $category)
+                        <li class="nav-item dropdown position-static">
+                            <a class="nav-link py-1 px-2 d-flex flex-column align-items-center {{ request()->is($category->slug) ? 'active' : '' }}" 
+                               href="{{ url('/' . $category->slug) }}"
+                               id="category-{{ $category->id }}"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false"
+                               style="font-size: 0.8rem; white-space: nowrap; min-width: fit-content;">
+                                @if($category->icon || $category->image)
+                                    <div class="mb-1" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                        @if($category->image)
+                                            <img src="{{ asset('storage/' . $category->image) }}" 
+                                                 alt="{{ $category->name }}" 
+                                                 style="max-width: 24px; max-height: 24px; object-fit: contain;">
+                                        @elseif($category->icon)
+                                            <i class="{{ $category->icon }}" style="font-size: 24px;"></i>
+                                        @endif
+                                    </div>
+                                @endif
+                                <span>{{ $category->name }}</span>
+                            </a>
+                            
+                            @if($category->children->count() > 0)
+                                <ul class="dropdown-menu dropdown-menu-mega w-100 shadow-lg border-0 p-4" 
+                                    aria-labelledby="category-{{ $category->id }}"
+                                    style="margin-top: 0; border-radius: 0;">
+                                    <div class="container">
+                                        <div class="row g-4">
+                                            @foreach($category->children as $childCategory)
+                                                <div class="col-lg-3 col-md-4">
+                                                    <div class="mb-3">
+                                                        <h6 class="fw-bold mb-3">
+                                                            <a href="{{ url('/' . $childCategory->slug) }}" 
+                                                               class="text-dark text-decoration-none">
+                                                                {{ $childCategory->name }}
+                                                            </a>
+                                                        </h6>
+                                                        
+                                                        @if($childCategory->products->count() > 0)
+                                                            <ul class="list-unstyled mb-0">
+                                                                @foreach($childCategory->products as $product)
+                                                                    <li class="mb-2">
+                                                                        <a href="{{ url('/' . $product->slug) }}" 
+                                                                           class="text-muted text-decoration-none d-flex align-items-center gap-2">
+                                                                            @if($product->images->count() > 0)
+                                                                                <img src="{{ asset('storage/' . $product->images->first()->image) }}" 
+                                                                                     alt="{{ $product->name }}"
+                                                                                     style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                                                            @endif
+                                                                            <span style="font-size: 0.875rem;">{{ $product->name }}</span>
+                                                                        </a>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </ul>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+                
+                {{-- Mobile Menu (Offcanvas) --}}
+                <div class="offcanvas offcanvas-bottom offcanvas-nav d-xl-none" style="height: 60vh">
                     <div class="offcanvas-header position-absolute top-0 start-50 translate-middle mt-n5">
                         <button type="button" class="btn-close bg-white opacity-100" data-bs-dismiss="offcanvas"
                             aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body pt-xl-0 align-items-center d-flex justify-content-end">
-                        <ul class="navbar-nav mb-2 mb-lg-0 flex-row flex-wrap gap-2">
+                    <div class="offcanvas-body pt-xl-0 align-items-center">
+                        <ul class="navbar-nav mb-2 mb-lg-0 flex-column">
                             @php
-                                $topMenuCategories = \App\Models\Category::where('show_in_top_menu', true)
+                                $mobileMenuCategories = \App\Models\Category::where('show_in_top_menu', true)
                                     ->where(function($query) {
                                         $query->whereNull('parent_id')
                                               ->orWhere('parent_id', 0);
                                     })
+                                    ->with(['children'])
                                     ->orderBy('sort_order')
                                     ->get();
                             @endphp
                             
-                            @foreach($topMenuCategories as $category)
+                            @foreach($mobileMenuCategories as $category)
                                 <li class="nav-item">
                                     <a class="nav-link py-1 px-2 d-flex flex-column align-items-center {{ request()->is($category->slug) ? 'active' : '' }}" 
-                                       href="{{ url('/' . $category->slug) }}"
-                                       style="font-size: 0.875rem; white-space: nowrap;">
+                                       href="{{ url('/' . $category->slug) }}">
                                         @if($category->icon || $category->image)
                                             <div class="mb-1" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
                                                 @if($category->image)
@@ -95,10 +182,23 @@
                                         @endif
                                         <span>{{ $category->name }}</span>
                                     </a>
+                                    
+                                    @if($category->children->count() > 0)
+                                        <ul class="list-unstyled ms-4 mt-2">
+                                            @foreach($category->children as $childCategory)
+                                                <li class="mb-2">
+                                                    <a href="{{ url('/' . $childCategory->slug) }}" 
+                                                       class="text-muted text-decoration-none">
+                                                        {{ $childCategory->name }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
-                        <div class="d-xl-none d-grid position-absolute bottom-0 w-100 start-0 end-0 p-4">
+                        <div class="d-grid position-absolute bottom-0 w-100 start-0 end-0 p-4">
                             @auth
                                 <a href="{{ route('dashboard') }}" class="btn btn-primary">Dashboard</a>
                             @else

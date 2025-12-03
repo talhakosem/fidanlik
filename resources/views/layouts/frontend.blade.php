@@ -37,11 +37,94 @@
     <link href="{{ frontend_asset('libs/drift-zoom/dist/drift-basic.min.css') }}" rel="stylesheet">
     <link href="{{ frontend_asset('libs/simplebar/dist/simplebar.min.css') }}" rel="stylesheet">
     
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="{{ frontend_asset('css/theme.min.css') }}">
-    
-    <!-- Additional CSS -->
-    @stack('styles')
+           <!-- Theme CSS -->
+           <link rel="stylesheet" href="{{ frontend_asset('css/theme.min.css') }}">
+
+           <!-- Mega Menu Styles -->
+           <style>
+               .nav-item.dropdown {
+                   position: static;
+               }
+               
+               .dropdown-menu-mega {
+                   position: fixed;
+                   left: 0;
+                   right: 0;
+                   width: 100%;
+                   max-width: 100%;
+                   margin: 0 auto;
+                   top: auto;
+                   border-top: 1px solid #dee2e6;
+                   padding-top: 0 !important;
+                   margin-top: 0 !important;
+               }
+               
+               /* Navbar'ın altına hizala */
+               .navbar-expand-xl .navbar-nav .nav-item.dropdown:hover .dropdown-menu-mega {
+                   top: 100%;
+                   margin-top: 0;
+               }
+               
+               /* Hover durumunu hem nav-item hem de dropdown için kontrol et */
+               .nav-item.dropdown:hover .dropdown-menu-mega,
+               .dropdown-menu-mega:hover {
+                   display: block !important;
+               }
+               
+               .nav-item.dropdown .dropdown-menu-mega {
+                   display: none;
+               }
+               
+               /* Dropdown ile nav-item arasındaki boşluğu kaldır - invisible bridge */
+               .dropdown-menu-mega::before {
+                   content: '';
+                   position: absolute;
+                   top: -20px;
+                   left: 0;
+                   right: 0;
+                   height: 20px;
+                   background: transparent;
+               }
+               
+               /* Nav-item'ın tamamı hover alanı olsun */
+               .nav-item.dropdown:hover {
+                   z-index: 1000;
+               }
+               
+               .dropdown-menu-mega {
+                   z-index: 999;
+               }
+               
+               /* Navbar'ın altına tam hizalama için */
+               .navbar {
+                   position: relative;
+               }
+               
+               @media (min-width: 1200px) {
+                   .dropdown-menu-mega {
+                       left: 50%;
+                       transform: translateX(-50%);
+                   }
+               }
+               
+               @media (min-width: 1200px) {
+                   .dropdown-menu-mega {
+                       left: 50%;
+                       transform: translateX(-50%);
+                   }
+               }
+               
+               .dropdown-menu-mega .container {
+                   max-width: 1200px;
+               }
+               
+               .dropdown-menu-mega a:hover {
+                   color: #0d6efd !important;
+               }
+           </style>
+
+           <!-- Additional CSS -->
+           @stack('styles')
 </head>
 <body>
     <!-- Header/Navbar -->
