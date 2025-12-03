@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::post('products/{product}/images', [\App\Http\Controllers\ProductController::class, 'storeImage'])->name('products.images.store');
     Route::delete('products/{product}/images/{productImage}', [\App\Http\Controllers\ProductController::class, 'deleteImage'])->name('products.images.delete');
     Route::post('products/{product}/images/reorder', [\App\Http\Controllers\ProductController::class, 'updateImageOrder'])->name('products.images.reorder');
+    Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
 });

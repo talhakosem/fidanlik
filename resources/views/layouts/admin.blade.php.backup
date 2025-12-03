@@ -91,15 +91,6 @@
                                     </div>
                                 </a>
                             </li>
-                            
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><i class="bi bi-bag-check"></i></span>
-                                        <span class="nav-link-text">Geçmiş Siparişler</span>
-                                    </div>
-                                </a>
-                            </li>
                             <li class="nav-item mt-6 mb-3">
                                 <span class="nav-label">Ayarlar</span>
                             </li>
@@ -171,14 +162,6 @@
                                         <span class="nav-link-text">Ürünler</span>
                                     </div>
                                 </a>
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><i class="bi bi-bag-check"></i></span>
-                                        <span class="nav-link-text">Geçmiş Siparişler</span>
-                                    </div>
-                                </a>
-                            </li>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('categories.index') }}">
