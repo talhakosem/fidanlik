@@ -33,7 +33,7 @@
                 <!--Blog category-->
                 <div class="col-lg-4 col-md-6">
                     <article>
-                        <a href="{{ route('frontend.blog.show', $post->slug) }}" class="position-relative d-flex">
+                        <a href="{{ url('/' . $post->slug) }}" class="position-relative d-flex">
                             <figure class="img-hover mb-0">
                                 @if($post->cover_image)
                                     <img src="{{ asset('storage/' . $post->cover_image) }}" 
@@ -53,7 +53,7 @@
                         </a>
                         <div class="mt-4">
                             <h3 class="fs-5">
-                                <a href="{{ route('frontend.blog.show', $post->slug) }}" class="text-inherit">
+                                <a href="{{ url('/' . $post->slug) }}" class="text-inherit">
                                     {{ $post->title }}
                                 </a>
                             </h3>
