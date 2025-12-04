@@ -12,7 +12,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('frontend.home');
+        // Random 15 ürün getir
+        $randomProducts = \App\Models\Product::where('is_active', true)
+            ->with(['images', 'categories'])
+            ->inRandomOrder()
+            ->limit(15)
+            ->get();
+        
+        // Random 3 blog yazısı getir
+        $randomPosts = \App\Models\Post::where('is_published', true)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+        
+        return view('frontend.home', compact('randomProducts', 'randomPosts'));
     }
 
     /**
